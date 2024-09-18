@@ -1,0 +1,81 @@
+@import './mixins';
+@import './variables';
+
+body {
+}
+
+.d-f {
+	display: flex;
+}
+
+.d-g {
+	display: grid;
+}
+
+.jc-sb {
+	justify-content: space-between;
+}
+
+.jc-c {
+	justify-content: center;
+}
+
+.jc-e {
+	justify-content: end;
+}
+
+.ai-c {
+	align-items: center;
+}
+
+.fd-c {
+	flex-direction: column;
+}
+
+.fw-w {
+	flex-wrap: wrap;
+}
+
+.ta-c {
+	text-align: center;
+}
+
+.ta-e {
+	text-align: end;
+}
+
+.section {
+	@include adaptiv-value('margin-bottom', 244, 64, 0);
+}
+
+.title {
+	@include adaptiv-value('font-size', 130, 48, 0);
+	font-weight: 700;
+	@include adaptiv-value('line-height', 120, 48, 0);
+	@include adaptiv-value('letter-spacing', -9.1, -2.3, 0);
+}
+
+.subtitle {
+	font-weight: 700;
+	@include adaptiv-value('font-size', 80, 32, 0);
+	line-height: 100%;
+	letter-spacing: -0.06em;
+}
+
+.button {
+	display: inline-block;
+	border: 1px solid rgba(255, 255, 255, 0.16);
+	background: #fff;
+	@include adaptiv-value('border-radius', 24, 16, 0);
+	@include adaptiv-value('padding-top', 24, 12, 0);
+	@include adaptiv-value('padding-right', 48, 20, 0);
+	@include adaptiv-value('padding-bottom', 24, 12, 0);
+	@include adaptiv-value('padding-left', 48, 20, 0);
+	font-weight: 700;
+	@include adaptiv-value('font-size', 24, 16, 0);
+	font-family: 'Inter', sans-serif;
+	line-height: 133%;
+	letter-spacing: -0.02em;
+	text-align: center;
+	color: #0a0c0f;
+}
