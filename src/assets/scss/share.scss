@@ -79,3 +79,54 @@ body {
 	text-align: center;
 	color: #0a0c0f;
 }
+
+.dropdown {
+	position: relative;
+
+	&:hover {
+		.dropdown-menu {
+			visibility: visible;
+			opacity: 1;
+		}
+
+		a {
+			span {
+				&:last-child {
+					transform: rotate(180deg);
+				}
+			}
+		}
+	}
+
+	a {
+		span {
+			&:last-child {
+				transition: transform 0.4s;
+			}
+		}
+	}
+
+	.dropdown-menu {
+		visibility: hidden;
+		position: absolute;
+		top: 100%;
+		left: 0;
+		background-color: #1a1a1a; /* Темный фон для лучшего контраста */
+		border-radius: 8px;
+		min-width: 160px;
+		box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.4); /* Более выраженная тень */
+		z-index: 1000;
+		opacity: 0;
+		transition: opacity 0.3s ease;
+
+		li {
+			padding: 10px;
+			transition: background-color 0.3s ease;
+
+			a {
+				color: rgba(255, 255, 255, 0.9); /* Яркий текст */
+				font-weight: 500; /* Насыщенность текста для лучшей видимости */
+			}
+		}
+	}
+}

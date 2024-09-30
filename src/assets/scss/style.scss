@@ -49,43 +49,36 @@ body {
 			1;
 	}
 
-	&__top-row {
-		grid-template-columns: 1fr 3fr 1fr;
-		column-gap: 10px;
-	}
+	&__top-content {
+		font-weight: 600;
+		font-size: 13px;
+		line-height: 138%;
+		letter-spacing: -0.01em;
+		grid-column: 2/3;
 
-	&__top-column {
-		&:first-child {
-			font-weight: 600;
-			font-size: 13px;
-			line-height: 138%;
-			letter-spacing: -0.01em;
-			grid-column: 2/3;
+		span {
+			opacity: 0.8;
+			margin-right: 10px;
 
-			span {
-				&:first-child {
-					opacity: 0.8;
-					margin-right: 10px;
-
-					&::after {
-						content: '';
-						display: block;
-						width: 2px;
-						height: 1em;
-						opacity: 0.16;
-						background-color: #fff;
-						margin-left: 10px;
-					}
-				}
-
-				&:last-child {
-					opacity: 0.25;
-				}
+			&::after {
+				content: '';
+				display: block;
+				width: 2px;
+				height: 1em;
+				opacity: 0.16;
+				background-color: #fff;
+				margin-left: 10px;
 			}
 		}
 
-		&:last-child {
-			grid-column: 3/4;
+		a {
+			opacity: 0.25;
+			color: #fff;
+			transition: 0.2s;
+
+			&:hover {
+				opacity: 1;
+			}
 		}
 	}
 
@@ -94,7 +87,7 @@ body {
 		line-height: 150%;
 		letter-spacing: -0.02em;
 		color: rgba(255, 255, 255, 0.56);
-		padding: 20px 0px;
+		padding: 20px 0;
 
 		.logo {
 			margin-right: 30px;
@@ -104,34 +97,49 @@ body {
 			color: rgba(255, 255, 255, 0.56);
 		}
 
-		ul li {
-			margin-right: 20px;
-			padding: 6px 12px;
-			border-width: 1px;
-			border-style: solid;
-			border-color: transparent;
-			border-radius: 12px;
-			background-color: transparent;
-			cursor: pointer;
-			transition: ease 0.2s;
+		nav {
+			& > ul {
+				& > li {
+					margin-right: 20px;
+					padding: 6px 12px;
 
-			&:hover {
-				border-color: rgba(255, 255, 255, 0.02);
-				background-color: rgba(255, 255, 255, 0.08);
+					&:last-child {
+						margin-right: 0px;
+					}
+				}
 			}
+		}
 
-			&:last-child {
-				margin-right: 0px;
-			}
+		ul {
+			li {
+				border-width: 1px;
+				border-style: solid;
+				border-color: transparent;
+				border-radius: 12px;
+				background-color: transparent;
+				cursor: pointer;
+				transition: ease 0.2s;
 
-			&:nth-child(4) {
-				a {
-					span {
-						&:first-child {
-							margin-right: 7px;
+				&:hover {
+					border-color: rgba(255, 255, 255, 0.02);
+					background-color: rgba(255, 255, 255, 0.15);
+
+					a {
+						color: rgba(255, 255, 255, 0.9); /* Яркий текст */
+					}
+				}
+
+				&:nth-child(4) {
+					a {
+						span {
+							&:first-child {
+								margin-right: 7px;
+							}
 						}
 					}
 				}
+
+				/* Выпадающий список */
 			}
 		}
 	}
@@ -143,11 +151,6 @@ body {
 	}
 
 	&__bottom-right {
-		span {
-			&:first-child {
-				margin-right: 7px;
-			}
-		}
 	}
 }
 
