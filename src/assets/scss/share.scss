@@ -28,6 +28,10 @@ body {
 	align-items: center;
 }
 
+.ai-e {
+	align-items: end;
+}
+
 .fd-c {
 	flex-direction: column;
 }
@@ -115,7 +119,7 @@ body {
 		border-radius: 8px;
 		min-width: 160px;
 		box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.4); /* Более выраженная тень */
-		z-index: 1000;
+		z-index: 2;
 		opacity: 0;
 		transition: opacity 0.3s ease;
 
@@ -126,6 +130,60 @@ body {
 			a {
 				color: rgba(255, 255, 255, 0.9); /* Яркий текст */
 				font-weight: 500; /* Насыщенность текста для лучшей видимости */
+			}
+		}
+	}
+}
+
+.curtain {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.burger {
+	display: block;
+	width: 25px; // Увеличил ширину для лучшей видимости крестика
+	height: 20px; // Добавил высоту для лучшей видимости крестика
+	background: transparent;
+	border: none;
+	position: relative;
+
+	&__line {
+		position: absolute;
+		width: 100%;
+		height: 2px;
+		background: #fff;
+		left: 0;
+	}
+
+	&--open {
+		.burger__line {
+			&:nth-child(1) {
+				top: 0;
+			}
+
+			&:nth-child(2) {
+				top: 50%;
+				transform: translateY(-50%);
+			}
+
+			&:nth-child(3) {
+				bottom: 0;
+			}
+		}
+	}
+
+	&--close {
+		.burger__line {
+			&:first-child {
+				transform: rotate(45deg);
+			}
+
+			&:last-child {
+				transform: rotate(-45deg);
 			}
 		}
 	}
