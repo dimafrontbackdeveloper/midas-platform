@@ -324,9 +324,9 @@ body {
 	}
 
 	&__column-curtain {
+		top: 0;
 		left: 0;
 		transition: linear 1.5s;
-		@include adaptiv-value('border-radius', 24, 20, 0);
 		background: #1d1f22;
 
 		&--open {
