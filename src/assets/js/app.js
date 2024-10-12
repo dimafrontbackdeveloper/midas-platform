@@ -1,3 +1,9 @@
+AOS.init()
+
+AOS.init({
+	once: true, // whether animation should happen only once - while scrolling down
+})
+
 document.addEventListener('DOMContentLoaded', () => {
 	// numbers animation
 	function animateValue(className, start, end, duration, isNeedDollar = true) {
@@ -253,21 +259,21 @@ document.addEventListener('DOMContentLoaded', () => {
 		})
 	}
 
-	// Функция, которую нужно запускать при достижении середины элемента
-	function utilitySecondRowAnimation(entries, observer) {
-		entries.forEach(entry => {
-			if (entry.isIntersecting) {
-				// utility Second Column Items
-				const utilitySecondRowItem = document
-					.querySelector('.utility__row-second')
-					.querySelector('.utility__column-item')
+	// // // Функция, которую нужно запускать при достижении середины элемента
+	// function utilitySecondRowAnimation(entries, observer) {
+	// 	entries.forEach(entry => {
+	// 		if (entry.isIntersecting) {
+	// 			// utility Second Column Items
+	// 			const utilitySecondRowItem = document
+	// 				.querySelector('.utility__row-second')
+	// 				.querySelector('.utility__column-item')
 
-				utilitySecondRowItem.classList.add('utility__column-item--open')
+	// 			utilitySecondRowItem.classList.add('utility__column-item--open')
 
-				observer.unobserve(entry.target) // Если нужно наблюдать только один раз
-			}
-		})
-	}
+	// 			observer.unobserve(entry.target) // Если нужно наблюдать только один раз
+	// 		}
+	// 	})
+	// }
 
 	// Функция, которую нужно запускать при достижении середины элемента
 	function utilityThirdRowAnimation(entries, observer) {
@@ -443,15 +449,15 @@ document.addEventListener('DOMContentLoaded', () => {
 		.querySelectorAll('.utility__column')[1]
 	utilityRowFirstObserver.observe(utilityRowFirst)
 
-	// Создание наблюдателя
-	let utilityRowSecondObserver = new IntersectionObserver(
-		utilitySecondRowAnimation,
-		options
-	)
-	const utilityRowSecond = document
-		.querySelector('.utility__row-second')
-		.querySelectorAll('.utility__column')[1]
-	utilityRowSecondObserver.observe(utilityRowSecond)
+	// // Создание наблюдателя
+	// let utilityRowSecondObserver = new IntersectionObserver(
+	// 	utilitySecondRowAnimation,
+	// 	options
+	// )
+	// const utilityRowSecond = document
+	// 	.querySelector('.utility__row-second')
+	// 	.querySelectorAll('.utility__column')[1]
+	// utilityRowSecondObserver.observe(utilityRowSecond)
 
 	// Создание наблюдателя
 	let utilityRowThirdObserver = new IntersectionObserver(
@@ -463,10 +469,16 @@ document.addEventListener('DOMContentLoaded', () => {
 		.querySelectorAll('.utility__column')[1]
 	utilityRowThirdObserver.observe(utilityRowThird)
 
+	let suportAnimationOtions = {
+		root: null, // В null по умолчанию, что означает viewport
+		rootMargin: '0px',
+		threshold: 0, // 50% видимости элемента
+	}
+
 	// Создание наблюдателя
 	let supportContentRowObserver = new IntersectionObserver(
 		supportContentRowAnimation,
-		options
+		suportAnimationOtions
 	)
 	const supportContentRow = document.querySelector('.support__content-row')
 	supportContentRowObserver.observe(supportContentRow)

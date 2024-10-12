@@ -681,7 +681,7 @@ body {
 		right: -300px;
 		top: -250px;
 		z-index: -1;
-		transform: scale(200%);
+		transform: scale(200%) !important;
 
 		@include breakpoint(1024px) {
 			right: -200px;
@@ -793,13 +793,6 @@ body {
 
 		&:nth-of-type(2) {
 			.utility__column-item {
-				opacity: 0;
-				transition: 3s ease;
-
-				&--open {
-					opacity: 1;
-				}
-
 				@include breakpoint(1024px) {
 					max-width: 400px;
 				}
@@ -1137,6 +1130,7 @@ body {
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		margin-right: 15px;
 
 		svg {
 			@include adaptiv-value('width', 31, 20, 0);
@@ -1144,6 +1138,7 @@ body {
 		}
 
 		@include breakpoint(768px) {
+			margin-right: 0px;
 			padding: 15px;
 			background: rgba(67, 161, 247, 0.16);
 			border-radius: 100px;
