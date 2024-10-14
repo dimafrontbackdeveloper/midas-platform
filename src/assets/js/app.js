@@ -232,9 +232,13 @@ document.addEventListener('DOMContentLoaded', () => {
 					)
 					items.forEach((item, i) => {
 						setTimeout(() => {
-							item.style.height = `calc(100% - ${i * 20}px)`
+							item.style.height =
+								window.innerWidth <= 768
+									? `calc(100% - ${i * 10}px)`
+									: `calc(100% - ${i * 20}px)`
 						}, i * 500)
 					})
+
 					observer.unobserve(entry.target)
 				}
 			})
@@ -350,6 +354,15 @@ document.addEventListener('DOMContentLoaded', () => {
 		observerCallbacks.utilityFirstRow,
 		observerOptions
 	)
+
+	window.addEventListener('resize', () => {
+		createObserver(
+			document.querySelector('.utility__row-first .utility__column'),
+			observerCallbacks.utilityFirstRow,
+			observerOptions
+		)
+	})
+
 	createObserver(
 		document.querySelector('.utility__row-third .utility__column'),
 		observerCallbacks.utilityThirdRow,
