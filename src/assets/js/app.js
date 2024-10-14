@@ -1,485 +1,350 @@
-AOS.init()
-
 AOS.init({
 	once: true, // whether animation should happen only once - while scrolling down
 })
 
 document.addEventListener('DOMContentLoaded', () => {
-	// numbers animation
+	document.body.classList.add('disable-scroll')
+	var preloader = document.querySelector('.preloader')
+	var minimumTime = 2500 // Минимальное время отображения прелоадера в миллисекундах
+	var startTime = new Date().getTime()
+	const opacityTransition = 1000
+
+	const hideLoader = () => {
+		var currentTime = new Date().getTime()
+		var elapsedTime = currentTime - startTime
+		var remainingTime = minimumTime - elapsedTime
+
+		if (remainingTime > 0) {
+			setTimeout(function () {
+				document.body.classList.remove('disable-scroll')
+				preloader.classList.add('preloader--hide')
+
+				setTimeout(() => {
+					preloader.style.zIndex = '-1'
+				}, opacityTransition)
+			}, remainingTime)
+		} else {
+			document.body.classList.remove('disable-scroll')
+			preloader.classList.add('preloader--hide')
+
+			setTimeout(() => {
+				preloader.style.zIndex = '-1'
+			}, opacityTransition)
+		}
+	}
+
+	window.addEventListener('load', function () {
+		hideLoader()
+	})
+
+	// Function to animate values
 	function animateValue(className, start, end, duration, isNeedDollar = true) {
 		const obj = document.querySelector(`.${className}`)
-		const range = end - start
+		const endValue = parseInt(end.replace(/\s/g, ''), 10) // Преобразуем end в числовое значение, удаляя пробелы
+		const range = endValue - start
 		let startTime = null
+
+		function formatValue(value) {
+			return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') // Форматируем значение с запятыми
+		}
 
 		function step(currentTime) {
 			if (!startTime) startTime = currentTime
 			const progress = currentTime - startTime
-			const stepValue = Math.min(start + (progress / duration) * range, end)
+			const stepValue = Math.min(
+				start + (progress / duration) * range,
+				endValue
+			)
+			const formattedValue = formatValue(Math.floor(stepValue))
 
-			if (className === 'metrics__circulation') {
-				obj.textContent = isNeedDollar
-					? `$${stepValue.toFixed(2)}`
-					: `${stepValue.toFixed(2)}`
-			} else {
-				obj.textContent = isNeedDollar
-					? `$${Math.floor(stepValue)}`
-					: `${Math.floor(stepValue)}`
-			}
+			obj.textContent = isNeedDollar
+				? `$${formattedValue}`
+				: `${formattedValue}`
 
 			if (progress < duration) {
 				requestAnimationFrame(step)
 			} else {
-				if (className !== 'metrics__circulation') {
-					obj.textContent = isNeedDollar
-						? `$${end.toLocaleString()}`
-						: `${end.toLocaleString()}`
-				} else {
-					obj.textContent = isNeedDollar
-						? `$${end.toFixed(2).toLocaleString()}`
-						: `${end.toFixed(2).toLocaleString()}`
-				}
+				obj.textContent = isNeedDollar
+					? `$${formatValue(endValue)}`
+					: `${formatValue(endValue)}`
 			}
 		}
 
 		requestAnimationFrame(step)
 	}
 
-	// frequently
-	const frequentlyQuestions = document.querySelectorAll('.frequently__question')
+	// Toggle frequently asked questions
 	const frequentlyQuestionImgs = document.querySelectorAll(
 		'.frequently__question-img'
 	)
-
-	frequentlyQuestionImgs.forEach((frequentlyQuestionImg, i) => {
-		frequentlyQuestionImg.addEventListener('click', () => {
-			const frequentlyQuestion = frequentlyQuestions[i]
-
-			if (
-				!frequentlyQuestion.classList.contains('frequently__question--open')
-			) {
-				frequentlyQuestion.classList.add('frequently__question--open')
-			} else {
-				frequentlyQuestion.classList.remove('frequently__question--open')
-			}
+	frequentlyQuestionImgs.forEach((img, i) => {
+		img.addEventListener('click', () => {
+			const question = document.querySelectorAll('.frequently__question')[i]
+			question.classList.toggle('frequently__question--open')
 		})
 	})
 
-	// Функция, которую нужно запускать при достижении середины элемента
-	function introFirstColumnAnimation(entries, observer) {
-		entries.forEach(entry => {
-			if (entry.isIntersecting) {
-				console.log('М середина элемента достигнута!')
-				// intro First Column
-				const introFirstColumnImgs = document
-					.querySelector('.intro__column-first')
-					.querySelectorAll('.intro__column-img')
+	// Intersection Observer callbacks
+	const observerCallbacks = {
+		introFirstColumn(entries, observer) {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					const imgs = document.querySelectorAll(
+						'.intro__column-first .intro__column-img'
+					)
+					imgs.forEach((img, i) => {
+						setTimeout(
+							() => img.classList.add('intro__column-img--visible'),
+							i * 150
+						)
+					})
+					observer.unobserve(entry.target)
+				}
+			})
+		},
+		introSecondColumn(entries, observer) {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					const imgs = document.querySelectorAll(
+						'.intro__column-second .intro__column-img'
+					)
+					imgs.forEach((img, i) => {
+						setTimeout(() => {
+							img.classList.add('intro__column-img--visible')
+							if (i === imgs.length - 1) {
+								img.classList.add('intro__column-toggle--switch')
+							}
+						}, i * 500)
+					})
+					observer.unobserve(entry.target)
+				}
+			})
+		},
+		introThirdColumn(entries, observer) {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					const curtain = document.querySelector('.intro__column-curtain')
+					curtain.classList.add('intro__column-curtain--open')
 
-				introFirstColumnImgs.forEach((introColumnImg, i) => {
-					setTimeout(() => {
-						introColumnImg.classList.add('intro__column-img--visible')
-					}, i * 150) // Задержка в 500 мс между появлениями изображений
-				})
+					const imgs = document.querySelectorAll(
+						'.intro__column-third .intro__column-img'
+					)
+					imgs.forEach((img, i) => {
+						setTimeout(
+							() => img.classList.add('intro__column-img--visible'),
+							i * 1500
+						)
+					})
+					observer.unobserve(entry.target)
+				}
+			})
+		},
+		metrics(entries, observer) {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					const curtain = document.querySelector(
+						'.metrics__content-circle-curtain'
+					)
+					curtain.classList.add('metrics__content-circle-curtain--open')
 
-				// Здесь можно вызвать любую другую функцию
-				observer.unobserve(entry.target) // Если нужно наблюдать только один раз
-			}
-		})
+					const gradient = document.querySelector('.metrics__content-gradient')
+					gradient.classList.add('metrics__content-gradient--visible')
+
+					observer.unobserve(entry.target)
+				}
+			})
+		},
+		metricsMarket(entries, observer) {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					animateValue('metrics__market', 0, '47572397', 1200)
+					observer.unobserve(entry.target)
+				}
+			})
+		},
+		metricsVolume(entries, observer) {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					animateValue('metrics__volume', 0, '183241', 1200)
+					observer.unobserve(entry.target)
+				}
+			})
+		},
+		metricsCirculation(entries, observer) {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					animateValue('metrics__circulation', 0, '2575183', 1200, false)
+					observer.unobserve(entry.target)
+				}
+			})
+		},
+		metricsPrice(entries, observer) {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					animateValue('metrics__price', 0, '19', 1200)
+					observer.unobserve(entry.target)
+				}
+			})
+		},
+		stakeItemMillion(entries, observer) {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					animateValue('stake__item-million', 0, '30', 1200)
+					observer.unobserve(entry.target)
+				}
+			})
+		},
+		stakeItemStaking(entries, observer) {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					animateValue('stake__item-staking', 0, '2600', 1200)
+					observer.unobserve(entry.target)
+				}
+			})
+		},
+		stakeItemTotal(entries, observer) {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					animateValue('stake__item-total', 0, '1800000', 1200)
+					observer.unobserve(entry.target)
+				}
+			})
+		},
+		utilityFirstRow(entries, observer) {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					const items = document.querySelectorAll(
+						'.utility__row-first .utility__column-item'
+					)
+					items.forEach((item, i) => {
+						setTimeout(() => {
+							item.style.height = `calc(100% - ${i * 20}px)`
+						}, i * 500)
+					})
+					observer.unobserve(entry.target)
+				}
+			})
+		},
+		utilityThirdRow(entries, observer) {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					const items = document.querySelectorAll(
+						'.utility__row-third .utility__column-item'
+					)
+					items.forEach(item => {
+						item.classList.add('utility__column-item--scale')
+					})
+					observer.unobserve(entry.target)
+				}
+			})
+		},
+		supportContentRow(entries, observer) {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					animateValue('support__content-liquidity', 0, '4824884', 1200)
+					animateValue('support__content-bought', 0, '63844', 1200, false)
+
+					const img = document.querySelector('.support__content-img')
+					img.classList.add('support__content-img--visible')
+					observer.unobserve(entry.target)
+				}
+			})
+		},
 	}
 
-	// Функция, которую нужно запускать при достижении середины элемента
-	function introSecondColumnAnimation(entries, observer) {
-		entries.forEach(entry => {
-			if (entry.isIntersecting) {
-				// intro second Column
-				const introSecondColumnImgs = document
-					.querySelector('.intro__column-second')
-					.querySelectorAll('.intro__column-img')
-
-				introSecondColumnImgs.forEach((introColumnImg, i) => {
-					setTimeout(() => {
-						introColumnImg.classList.add('intro__column-img--visible')
-
-						if (introSecondColumnImgs.length - 1 === i) {
-							introColumnImg.classList.add('intro__column-toggle--switch')
-						}
-					}, i * 500) // Задержка в 500 мс между появлениями изображений
-				})
-
-				// Здесь можно вызвать любую другую функцию
-				observer.unobserve(entry.target) // Если нужно наблюдать только один раз
-			}
-		})
-	}
-
-	// Функция, которую нужно запускать при достижении середины элемента
-	function introThirdColumnAnimation(entries, observer) {
-		entries.forEach(entry => {
-			if (entry.isIntersecting) {
-				// intro third Column
-
-				const introCurtain = document.querySelector('.intro__column-curtain')
-				introCurtain.classList.add('intro__column-curtain--open')
-
-				const introThirdColumnImgs = document
-					.querySelector('.intro__column-third')
-					.querySelectorAll('.intro__column-img')
-
-				introThirdColumnImgs.forEach((introColumnImg, i) => {
-					setTimeout(() => {
-						introColumnImg.classList.add('intro__column-img--visible')
-					}, i * 1500) // Задержка в 500 мс между появлениями изображений
-				})
-
-				// Здесь можно вызвать любую другую функцию
-				observer.unobserve(entry.target) // Если нужно наблюдать только один раз
-			}
-		})
-	}
-
-	// Функция, которую нужно запускать при достижении середины элемента
-	function metricsAnimation(entries, observer) {
-		entries.forEach(entry => {
-			if (entry.isIntersecting) {
-				// metrics curtain
-				const metricsCurtain = document.querySelector(
-					'.metrics__content-circle-curtain'
-				)
-				metricsCurtain.classList.add('metrics__content-circle-curtain--open')
-
-				// metrics gradient
-				const metricsGradient = document.querySelector(
-					'.metrics__content-gradient'
-				)
-				metricsGradient.classList.add('metrics__content-gradient--visible')
-
-				// Здесь можно вызвать любую другую функцию
-				observer.unobserve(entry.target) // Если нужно наблюдать только один раз
-			}
-		})
-	}
-
-	// Функция, которую нужно запускать при достижении середины элемента
-	function metricsMarketAnimation(entries, observer) {
-		entries.forEach(entry => {
-			if (entry.isIntersecting) {
-				animateValue('metrics__market', 0, 47572397, 1200)
-				observer.unobserve(entry.target) // Если нужно наблюдать только один раз
-			}
-		})
-	}
-
-	// Функция, которую нужно запускать при достижении середины элемента
-	function metricsVolumeAnimation(entries, observer) {
-		entries.forEach(entry => {
-			if (entry.isIntersecting) {
-				animateValue('metrics__volume', 0, 183241, 1200)
-
-				// Здесь можно вызвать любую другую функцию
-				observer.unobserve(entry.target) // Если нужно наблюдать только один раз
-			}
-		})
-	}
-
-	// Функция, которую нужно запускать при достижении середины элемента
-	function metricsCirculationAnimation(entries, observer) {
-		entries.forEach(entry => {
-			if (entry.isIntersecting) {
-				animateValue('metrics__circulation', 0, 2575183, 1200)
-
-				// Здесь можно вызвать любую другую функцию
-				observer.unobserve(entry.target) // Если нужно наблюдать только один раз
-			}
-		})
-	}
-
-	// Функция, которую нужно запускать при достижении середины элемента
-	function metricsPriceAnimation(entries, observer) {
-		entries.forEach(entry => {
-			if (entry.isIntersecting) {
-				animateValue('metrics__price', 0, 19, 1200)
-
-				// Здесь можно вызвать любую другую функцию
-				observer.unobserve(entry.target) // Если нужно наблюдать только один раз
-			}
-		})
-	}
-
-	// Функция, которую нужно запускать при достижении середины элемента
-	function stakeItemMillionAnimation(entries, observer) {
-		entries.forEach(entry => {
-			if (entry.isIntersecting) {
-				// stake numbers animation
-				animateValue('stake__item-million', 0, 30, 1200)
-
-				observer.unobserve(entry.target) // Если нужно наблюдать только один раз
-			}
-		})
-	}
-
-	// Функция, которую нужно запускать при достижении середины элемента
-	function stakeItemStakingAnimation(entries, observer) {
-		entries.forEach(entry => {
-			if (entry.isIntersecting) {
-				// stake numbers animation
-				animateValue('stake__item-staking', 0, 2600, 1200)
-
-				observer.unobserve(entry.target) // Если нужно наблюдать только один раз
-			}
-		})
-	}
-
-	// Функция, которую нужно запускать при достижении середины элемента
-	function stakeItemTotalAnimation(entries, observer) {
-		entries.forEach(entry => {
-			if (entry.isIntersecting) {
-				animateValue('stake__item-total', 0, 1800000, 1200)
-
-				observer.unobserve(entry.target) // Если нужно наблюдать только один раз
-			}
-		})
-	}
-
-	// Функция, которую нужно запускать при достижении середины элемента
-	function utilityFirstRowAnimation(entries, observer) {
-		entries.forEach(entry => {
-			if (entry.isIntersecting) {
-				// utility First Column Items
-				const utilityFirstRowItems = document
-					.querySelector('.utility__row-first')
-					.querySelectorAll('.utility__column-item')
-
-				utilityFirstRowItems.forEach((utilityFirstRowItem, i) => {
-					setTimeout(() => {
-						utilityFirstRowItem.style.height = `calc(100% - ${i * 20}px)`
-					}, i * 500) // Задержка в 500 мс между появлениями изображений
-				})
-
-				observer.unobserve(entry.target) // Если нужно наблюдать только один раз
-			}
-		})
-	}
-
-	// // // Функция, которую нужно запускать при достижении середины элемента
-	// function utilitySecondRowAnimation(entries, observer) {
-	// 	entries.forEach(entry => {
-	// 		if (entry.isIntersecting) {
-	// 			// utility Second Column Items
-	// 			const utilitySecondRowItem = document
-	// 				.querySelector('.utility__row-second')
-	// 				.querySelector('.utility__column-item')
-
-	// 			utilitySecondRowItem.classList.add('utility__column-item--open')
-
-	// 			observer.unobserve(entry.target) // Если нужно наблюдать только один раз
-	// 		}
-	// 	})
-	// }
-
-	// Функция, которую нужно запускать при достижении середины элемента
-	function utilityThirdRowAnimation(entries, observer) {
-		entries.forEach(entry => {
-			if (entry.isIntersecting) {
-				// utility third column items
-				const utilityThirdRowItems = document
-					.querySelector('.utility__row-third')
-					.querySelectorAll('.utility__column-item')
-
-				utilityThirdRowItems.forEach(utilityThirdRowItem => {
-					utilityThirdRowItem.classList.add('utility__column-item--scale')
-				})
-
-				observer.unobserve(entry.target) // Если нужно наблюдать только один раз
-			}
-		})
-	}
-
-	// Функция, которую нужно запускать при достижении середины элемента
-	function supportContentRowAnimation(entries, observer) {
-		entries.forEach(entry => {
-			if (entry.isIntersecting) {
-				// support numbers
-				animateValue(
-					'support__content-liquidity-first-number',
-					0,
-					4,
-					1200,
-					false
-				)
-				animateValue(
-					'support__content-liquidity-second-number',
-					0,
-					824,
-					1200,
-					false
-				)
-				animateValue(
-					'support__content-liquidity-third-number',
-					0,
-					884,
-					1200,
-					false
-				)
-				animateValue('support__content-bought-first-number', 0, 63, 1200, false)
-				animateValue(
-					'support__content-bought-second-number',
-					0,
-					844,
-					1200,
-					false
-				)
-
-				// support img
-				const supportContentImg = document.querySelector(
-					'.support__content-img'
-				)
-				supportContentImg.classList.add('support__content-img--visible')
-
-				observer.unobserve(entry.target) // Если нужно наблюдать только один раз
-			}
-		})
-	}
-
-	// Настройки для наблюдателя
-	let options = {
-		root: null, // В null по умолчанию, что означает viewport
+	// Intersection Observer options
+	const observerOptions = {
+		root: null, // Default is the viewport
 		rootMargin: '0px',
-		threshold: 0.5, // 50% видимости элемента
+		threshold: 0.5, // 50% visibility
 	}
 
-	let introColumns = document.querySelectorAll('.intro__column')
-
-	// Создание наблюдателя
-	let introFirstColumnObserver = new IntersectionObserver(
-		introFirstColumnAnimation,
-		options
-	)
-	introFirstColumnObserver.observe(introColumns[0])
-
-	// Создание наблюдателя
-	let introSecondColumnObserver = new IntersectionObserver(
-		introSecondColumnAnimation,
-		options
-	)
-	introSecondColumnObserver.observe(introColumns[1])
-
-	// Создание наблюдателя
-	let introThirdColumnObserver = new IntersectionObserver(
-		introThirdColumnAnimation,
-		options
-	)
-	introThirdColumnObserver.observe(introColumns[2])
-
-	// Создание наблюдателя
-	let metricsObserver = new IntersectionObserver(metricsAnimation, options)
-	const metricsCircle = document.querySelector(
-		'.metrics__content-circle-wrapper'
-	)
-	metricsObserver.observe(metricsCircle)
-
-	// Настройки для наблюдателя
-	let NumbersAnimationOptions = {
-		root: null, // В null по умолчанию, что означает viewport
+	const numberObserverOptions = {
+		root: null,
 		rootMargin: '0px',
 		threshold: 0,
 	}
 
-	// Создание наблюдателя
-	let metricsMarketObserver = new IntersectionObserver(
-		metricsMarketAnimation,
-		NumbersAnimationOptions
-	)
-	const metricsMarket = document.querySelector('.metrics__market')
-	metricsMarketObserver.observe(metricsMarket)
-
-	// Создание наблюдателя
-	let metricsVolumeObserver = new IntersectionObserver(
-		metricsVolumeAnimation,
-		NumbersAnimationOptions
-	)
-	const metricsVolume = document.querySelector('.metrics__volume')
-	metricsVolumeObserver.observe(metricsVolume)
-
-	// Создание наблюдателя
-	let metricsCirculationObserver = new IntersectionObserver(
-		metricsCirculationAnimation,
-		NumbersAnimationOptions
-	)
-	const metricsCirculation = document.querySelector('.metrics__circulation')
-	metricsCirculationObserver.observe(metricsCirculation)
-
-	// Создание наблюдателя
-	let metricsPriceObserver = new IntersectionObserver(
-		metricsPriceAnimation,
-		NumbersAnimationOptions
-	)
-	const metricsPrice = document.querySelector('.metrics__price')
-	metricsPriceObserver.observe(metricsPrice)
-
-	// Создание наблюдателя
-	let stakeItemMillionObserver = new IntersectionObserver(
-		stakeItemMillionAnimation,
-		NumbersAnimationOptions
-	)
-	const stakeItemMillion = document.querySelector('.stake__item-million')
-	stakeItemMillionObserver.observe(stakeItemMillion)
-
-	// Создание наблюдателя
-	let stakeItemStakingObserver = new IntersectionObserver(
-		stakeItemStakingAnimation,
-		NumbersAnimationOptions
-	)
-	const stakeItemStaking = document.querySelector('.stake__item-staking')
-	stakeItemStakingObserver.observe(stakeItemStaking)
-
-	// Создание наблюдателя
-	let stakeItemTotalObserver = new IntersectionObserver(
-		stakeItemTotalAnimation,
-		NumbersAnimationOptions
-	)
-	const stakeItemTotal = document.querySelector('.stake__item-total')
-	stakeItemTotalObserver.observe(stakeItemTotal)
-
-	// Создание наблюдателя
-	let utilityRowFirstObserver = new IntersectionObserver(
-		utilityFirstRowAnimation,
-		options
-	)
-	const utilityRowFirst = document
-		.querySelector('.utility__row-first')
-		.querySelectorAll('.utility__column')[1]
-	utilityRowFirstObserver.observe(utilityRowFirst)
-
-	// // Создание наблюдателя
-	// let utilityRowSecondObserver = new IntersectionObserver(
-	// 	utilitySecondRowAnimation,
-	// 	options
-	// )
-	// const utilityRowSecond = document
-	// 	.querySelector('.utility__row-second')
-	// 	.querySelectorAll('.utility__column')[1]
-	// utilityRowSecondObserver.observe(utilityRowSecond)
-
-	// Создание наблюдателя
-	let utilityRowThirdObserver = new IntersectionObserver(
-		utilityThirdRowAnimation,
-		options
-	)
-	const utilityRowThird = document
-		.querySelector('.utility__row-third')
-		.querySelectorAll('.utility__column')[1]
-	utilityRowThirdObserver.observe(utilityRowThird)
-
-	let suportAnimationOtions = {
-		root: null, // В null по умолчанию, что означает viewport
-		rootMargin: '0px',
-		threshold: 0, // 50% видимости элемента
+	// Create observers
+	const createObserver = (target, callback, options) => {
+		const observer = new IntersectionObserver(callback, options)
+		observer.observe(target)
+		return observer
 	}
 
-	// Создание наблюдателя
-	let supportContentRowObserver = new IntersectionObserver(
-		supportContentRowAnimation,
-		suportAnimationOtions
+	const introColumns = document.querySelectorAll('.intro__column')
+	createObserver(
+		introColumns[0],
+		observerCallbacks.introFirstColumn,
+		observerOptions
 	)
+	createObserver(
+		introColumns[1],
+		observerCallbacks.introSecondColumn,
+		observerOptions
+	)
+	createObserver(
+		introColumns[2],
+		observerCallbacks.introThirdColumn,
+		observerOptions
+	)
+
+	const metricsCircle = document.querySelector(
+		'.metrics__content-circle-wrapper'
+	)
+	createObserver(metricsCircle, observerCallbacks.metrics, observerOptions)
+
+	createObserver(
+		document.querySelector('.metrics__market'),
+		observerCallbacks.metricsMarket,
+		numberObserverOptions
+	)
+	createObserver(
+		document.querySelector('.metrics__volume'),
+		observerCallbacks.metricsVolume,
+		numberObserverOptions
+	)
+	createObserver(
+		document.querySelector('.metrics__circulation'),
+		observerCallbacks.metricsCirculation,
+		numberObserverOptions
+	)
+	createObserver(
+		document.querySelector('.metrics__price'),
+		observerCallbacks.metricsPrice,
+		numberObserverOptions
+	)
+
+	createObserver(
+		document.querySelector('.stake__item-million'),
+		observerCallbacks.stakeItemMillion,
+		numberObserverOptions
+	)
+	createObserver(
+		document.querySelector('.stake__item-staking'),
+		observerCallbacks.stakeItemStaking,
+		numberObserverOptions
+	)
+	createObserver(
+		document.querySelector('.stake__item-total'),
+		observerCallbacks.stakeItemTotal,
+		numberObserverOptions
+	)
+
+	createObserver(
+		document.querySelector('.utility__row-first .utility__column'),
+		observerCallbacks.utilityFirstRow,
+		observerOptions
+	)
+	createObserver(
+		document.querySelector('.utility__row-third .utility__column'),
+		observerCallbacks.utilityThirdRow,
+		observerOptions
+	)
+
 	const supportContentRow = document.querySelector('.support__content-row')
-	supportContentRowObserver.observe(supportContentRow)
+	createObserver(supportContentRow, observerCallbacks.supportContentRow, {
+		...observerOptions,
+		threshold: 0,
+	})
 })

@@ -188,3 +188,87 @@ body {
 		}
 	}
 }
+
+.disable-scroll {
+	overflow: hidden;
+}
+
+.preloader {
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 5;
+	background-color: #000; /* черный фон, можно изменить */
+	opacity: 1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	transition: 1s;
+
+	&--hide {
+		opacity: 0;
+	}
+
+	&__spinner {
+		position: relative;
+		width: 80px;
+		height: 80px;
+
+		&::before {
+			content: '';
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			width: 100%;
+			height: 100%;
+			border: 5px solid transparent;
+			border-top: 5px solid rgba(255, 255, 255, 0.7); /* полупрозрачный белый цвет */
+			border-right: 5px solid rgba(255, 255, 255, 0.3); /* полупрозрачный белый цвет */
+			border-radius: 50%;
+			box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+			transform: translate(-50%, -50%);
+			animation: spin 1.5s linear infinite, colorChange 3s linear infinite;
+		}
+	}
+
+	&__spinner-icon {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+}
+
+@keyframes spin {
+	0% {
+		transform: translate(-50%, -50%) rotate(0deg);
+	}
+	100% {
+		transform: translate(-50%, -50%) rotate(360deg);
+	}
+}
+
+@keyframes colorChange {
+	0% {
+		border-top-color: #ff4e50;
+		border-right-color: #f9d423;
+	}
+	25% {
+		border-top-color: #f9d423;
+		border-right-color: #24fe41;
+	}
+	50% {
+		border-top-color: #24fe41;
+		border-right-color: #24c6dc;
+	}
+	75% {
+		border-top-color: #24c6dc;
+		border-right-color: #ab36d3;
+	}
+	100% {
+		border-top-color: #ab36d3;
+		border-right-color: #ff4e50;
+	}
+}
