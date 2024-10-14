@@ -37,6 +37,20 @@ document.addEventListener('DOMContentLoaded', () => {
 		hideLoader()
 	})
 
+	const mobileNavigationMenu = document.querySelector('.mobile-navigation-menu')
+	const burgerOpenButton = document.querySelector('.burger--open')
+	const burgerCloseButton = document.querySelector('.burger--close')
+
+	burgerOpenButton.addEventListener('click', () => {
+		mobileNavigationMenu.classList.add('mobile-navigation-menu--visible')
+		document.body.classList.add('disable-scroll')
+	})
+
+	burgerCloseButton.addEventListener('click', () => {
+		mobileNavigationMenu.classList.remove('mobile-navigation-menu--visible')
+		document.body.classList.remove('disable-scroll')
+	})
+
 	// Function to animate values
 	function animateValue(className, start, end, duration, isNeedDollar = true) {
 		const obj = document.querySelector(`.${className}`)
