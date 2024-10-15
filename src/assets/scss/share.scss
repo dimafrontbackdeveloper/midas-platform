@@ -82,6 +82,13 @@ body {
 	letter-spacing: -0.02em;
 	text-align: center;
 	color: #0a0c0f;
+	transition: 0.3s;
+	cursor: pointer;
+
+	&:hover {
+		background: #ffd169;
+		color: #fff;
+	}
 }
 
 .dropdown {

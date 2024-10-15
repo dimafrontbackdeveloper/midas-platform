@@ -306,7 +306,7 @@ body {
 		position: relative;
 		margin-bottom: 8px;
 
-		@include adaptiv-value('min-height', 135, 110, 0);
+		@include adaptiv-value('min-height', 155, 120, 0);
 		overflow: hidden;
 	}
 
@@ -678,10 +678,18 @@ body {
 
 	&__gradient {
 		position: absolute;
+		width: 600px;
+		height: 600px;
 		right: -300px;
 		top: -250px;
 		z-index: -1;
-		transform: scale(200%) !important;
+		border-radius: 100%;
+		background: radial-gradient(
+			38.86% 38.86% at 50% 50%,
+			rgba(255, 108, 223, 0.7) 0%,
+			rgba(255, 108, 188, 0.7) 100%
+		);
+		filter: blur(400px);
 
 		@include breakpoint(1024px) {
 			right: -200px;
